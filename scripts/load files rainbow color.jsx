@@ -62,7 +62,7 @@ function hue_layers_rainbow() {
     for (var p = 0; p < allLayers.length; p++) {
         var layer = allLayers[p].name;
         myDocument.activeLayer = allLayers[p];
-
+        myDocument.activeLayer.blendMode = BlendMode.SCREEN
         alterHue(hue)
 
         hue = hue + parseInt(360 / numLayers)

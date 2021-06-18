@@ -138,7 +138,7 @@ function correct_layers(doc, table) {
 
     for (var p = 0; p < table.length; p++) {
 
-        $.writeln(table[p][0]);
+        // $.writeln(table[p][0]);
 
         var channel = table[p];
 

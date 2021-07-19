@@ -4,7 +4,6 @@
 #include "ui.jsx"
 #include "table.jsx"
 
-
 // in case we double clicked the file
 app.bringToFront();
 
@@ -14,9 +13,10 @@ main();
 function main() {
     
     // get script and save paths (from ui.jsx)
-    paths = promptUI();
-    var scriptFname = new File(paths[0]); 
-    var saveFname = new File(paths[1]); 
+    paths = promptSingleDataset();
+    var scriptFname = new File(paths[0]);
+    var inputFolderFname = new Folder(paths[1]);
+    var saveFname = new File(paths[2]); 
 
     // read table from the provided script (from table.jsx)
     table_contents = read_table(scriptFname);
@@ -25,10 +25,12 @@ function main() {
     var groups = table_contents[2];
 
     // load all files to the photoshop
-    var photoshopFolderPath = decodeURI(app.path + "/" + localize("$$$/ScriptingSupport/InstalledScripts=Presets/Scripts") + "/")
-    var load_file = new File(photoshopFolderPath + "Load Files into Stack.jsx")
-    $.evalFile(load_file);
+    load_folder_into_stack(inputFolderFname)
     
+//~     // for debugging
+//~     var photoshopFolderPath = decodeURI(app.path + "/" + localize("$$$/ScriptingSupport/InstalledScripts=Presets/Scripts") + "/")
+//~     var load_file = new File(photoshopFolderPath + "Load Files into Stack.jsx")
+//~     $.evalFile(load_file);
     
     // select the active document as my document
     myDocument = app.activeDocument;
@@ -50,8 +52,20 @@ function main() {
 
     // save document
     saveDocument(saveFname)
-
+    
+//~     // close the document
+//~     myDocument.close(SaveOptions.DONOTSAVECHANGES);
 };
+
+
+function load_folder_into_stack(input_folder){
+    var loadLayersFromScript = true;
+    $.evalFile(app.path + "/" +  localize("$$$/ScriptingSupport/InstalledScripts=Presets/Scripts") + "/Load Files into Stack.jsx");
+    
+    var files = input_folder.getFiles(/\.(jpg|png|tiff|tif|tga)$/i);
+    loadLayers.intoStack(files);
+};
+
 
 function create_groups(doc, groups) {
 
@@ -67,6 +81,7 @@ function create_groups(doc, groups) {
         myLayerSets[i].name = groups[i];
     }
 }
+
 
 function collectAllLayers(doc, allLayers) {
     for (var m = 0; m < doc.layers.length; m++) {
@@ -123,9 +138,7 @@ function saveDocument(saveFile) {
     var idsaveBegin = stringIDToTypeID("saveBegin");
     desc16.putEnumerated(idsaveStage, idsaveStageType, idsaveBegin);
     executeAction(idsave, desc16, DialogModes.NO);
-
 }
-
 
 
 function correct_layers(doc, table) {
@@ -176,11 +189,8 @@ function correct_layers(doc, table) {
 function doesLayerExist(layers, name) {
 
     for (i = 0; i < layers.length; i++) {
-
         if (layers[i].name == name) return true;
-
     }
-
     return false;
 
 }

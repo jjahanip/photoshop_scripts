@@ -35,7 +35,7 @@ function main(){
         var saveFname = File( decodeURI(inputFolderFname) + "/" + decodeURI(folder.name) + ".psb");  // save them in the parent folder
 
         // if there was a subfolder
-        if (subFolderFname !== "") {folder = folder + "/" + subFolderFname};
+        if (subFolderFname !== "") {folder = Folder(folder + "/" + subFolderFname)};
 
         var fileList =folder.getFiles(/\.(jpg|png|tiff|tif|tga)$/i);
         

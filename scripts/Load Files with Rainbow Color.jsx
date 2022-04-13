@@ -1,9 +1,13 @@
-﻿// enable double clicking from the Macintosh Finder or the Windows Explorer
+﻿<javascriptresource>
+<name>$$$/JavaScripts/LoadFilesWithRainbowColor/Menu=Load Files With Rainbow Color...</name>
+<category>Jahandar</category>
+</javascriptresource>
+
+// enable double clicking from the Macintosh Finder or the Windows Explorer
 #target photoshop
 
 // in case we double clicked the file
 app.bringToFront();
-
 main();
 
 ////////////////////////////////////

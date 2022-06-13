@@ -3,34 +3,85 @@
 ## Install:
 ### Using ExtendScript Toolkit:
 1. Download ExtendScript Toolkit from [here](https://www.adobe.com/devnet/scripting/estk.html).
-2. Set the proper Photoshop interpreter:
+2. Set the proper Photoshop interpreter:\
 ![img](_img/estk_interpreter.png)
 
 ### Using Visual Studio Code:
 1. Download VSCode from [here](https://code.visualstudio.com/download).
 2. In the **Extension** tab of the VSCode search for `adobe.extendscript-debug` and install.
-3. Open the folder containing the scripts.
-4. From `Run and Debug` tab (`ctrl+shit+D`) click `create a launch.jason file` and select `ExtendScript Debug`.
-5. In `launch.jason`, edit the `name` (configuration name) and `program` (path to the file to debug) based on the preference:
-    ```js 
-    {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+3. Open the folder containing the scripts. Then __open the file that you want to run__.
+4. From `Run and Debug` tab you can either,
+   1. start the Run/Debug using `Run and Debug`\
+   ![img](_img/launch_1.png)\
+   select `ExtendScript`\
+   ![img](_img/launch_2.png)\
+   select Host application `Adobe Photoshop 20202`\
+   ![img](_img/launch_3.png)
+
+   or 
+
+   2. you can `create a launch.jason file` and with your own configuration.\
+      The defaul configuration comes with `Attach to ExtendScript Engine` and `Launch Script in ExtendScript Engine` modes.
+      ```js
         {
-            "type": "extendscript-debug",
-            "request": "launch",
-            "name": "ExtendScript Debugger",
-            "program": "${workspaceFolder}/test.jsx",
-            "stopOnEntry": false
+            // Use IntelliSense to learn about possible attributes.
+            // Hover to view descriptions of existing attributes.
+            // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+            "version": "0.2.0",
+            "configurations": [
+                {
+                    "type": "extendscript-debug",
+                    "request": "attach",
+                    "name": "Attach to ExtendScript Engine"
+                },
+                {
+                    "type": "extendscript-debug",
+                    "request": "launch",
+                    "name": "Launch Script in ExtendScript Engine"
+                }
+            ]
         }
-    ]
-    }
-    ```
-6. Restart VSCode and close Photoshop.
-7. Start debugging!
+       ```
+    
+       `Attach to ExtendScript Engine` does not start the debugging and you should run the `ExtendScript: Evaluate Script in Host..` command.
+
+       `Launch Script in ExtendScript Engine` runs the script in the host application (for example Photoshop).
+
+       (Preferred) If you know your host application (by running the `launch` mode), you can specify it as a parameter in the configuration mode or by creating a new mode:
+
+       ```js
+       {
+           // Use IntelliSense to learn about possible attributes.
+           // Hover to view descriptions of existing attributes.
+           // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+           "version": "0.2.0",
+           "configurations": [
+               {
+                   "type": "extendscript-debug",
+                   "request": "attach",
+                   "name": "Attach to ExtendScript Engine"
+               },
+               {
+                   "type": "extendscript-debug",
+                   "request": "launch",
+                   "name": "Launch Script in ExtendScript Engine"
+               },
+               {
+                   "type": "extendscript-debug",
+                   "request": "launch",
+                   "name": "Debug Photoshop",
+                   "hostAppSpecifier": "photoshop-140.064",
+                   "stopOnEntry": false
+               }
+           ]
+       }
+       ```
+
+       Now you can select between different modes:\
+       ![img](_img/launch_4.png)
+
+5. Restart VSCode and close Photoshop.
+6. Start debugging!
 
 ### Using Webstrom:
 1. __Suppress the RunningScripts warning.__ Follow [this](https://helpx.adobe.com/photoshop/kb/enable-optional-extensions-photoshop-cc.html#:~:text=Save%20the%20file%20as%20%22PSUserConfig,%5C%5BPhotoshop_version%5D%5C%5BPhotoshop_version%5DSettings%5C) instruction:

@@ -17,6 +17,11 @@ function main() {
     
     // get script and save paths (from ui.jsx)
     paths = promptSingleDataset();
+    // paths = new Array();
+    // paths[0] = decodeURI("D:\\Multiplex_IHC\\Nath_Avi\\CV19-002\\script.csv");
+    // paths[1] = decodeURI("D:\\Multiplex_IHC\\Nath_Avi\\CV19-002");
+    // paths[2] = decodeURI("registered");
+
     var scriptFname = new File(paths[0]);
     var inputFolderFname = new Folder(paths[1]);
     var saveFname = new File(paths[2]); 
@@ -30,14 +35,13 @@ function main() {
     // load all files to the photoshop
     load_folder_into_stack(inputFolderFname)
     
-//~     // for debugging
-//~     var photoshopFolderPath = decodeURI(app.path + "/" + localize("$$$/ScriptingSupport/InstalledScripts=Presets/Scripts") + "/")
-//~     var load_file = new File(photoshopFolderPath + "Load Files into Stack.jsx")
-//~     $.evalFile(load_file);
-    
     // select the active document as my document
     myDocument = app.activeDocument;
-    
+
+    // remove layers that are not in the script
+    keeping_files = getCol(table, 0)
+    removeExtraLayers(myDocument, keeping_files)
+
     // move all C9 channels due to the optical shift in microscope
     moveC9Layers(myDocument);
     
@@ -52,9 +56,6 @@ function main() {
 
     // rename layer, hue layer, move to group
     correct_layers(myDocument, table);
-
-    // remove layers not in folder (in root)
-    removeArtLayers(myDocument);
 
     // save document
     saveDocument(saveFname)
@@ -203,9 +204,6 @@ function correct_layers(doc, table) {
             // get layer object
             var layer = doc.layers.getByName(channel[0]);
 
-            // get layerset (group) object
-            var layerSet = doc.layerSets.getByName(channel[3]);
-
             // set this layer as active layer
             doc.activeLayer = layer;
 
@@ -221,6 +219,7 @@ function correct_layers(doc, table) {
 
             // move the layer inside the LayerSet
             if (channel[3] !== "") {
+                var layerSet = doc.layerSets.getByName(channel[3]);
                 layer.move(layerSet, ElementPlacement.INSIDE); 
             }
         }
@@ -237,13 +236,16 @@ function doesLayerExist(layers, name) {
 
 }
 
-function removeArtLayers(doc) {
-    // artLayer is layer not in LayerSet (in root)
-    // for each artLayer -> remove the artLayer
-    var lenOfArtLayers = doc.artLayers.length
-    for (var m = 0; m < lenOfArtLayers; m++) {
-        doc.activeLayer = doc.artLayers[0];
-        doc.activeLayer.remove();
+function removeExtraLayers(doc, keep) {
+    // remove layers not in script
+    
+    var last_layer_idx = doc.artLayers.length
+
+    while (last_layer_idx--) {
+        if (keep.join(",").indexOf(doc.artLayers[last_layer_idx].name) < 0) {
+            doc.activeLayer = doc.artLayers[last_layer_idx];
+            doc.activeLayer.remove();
+        }
     }
 }
 
@@ -346,6 +348,17 @@ function promptSingleDataset(){
        }
 }
 
+// Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
+function cleanArray(actual) {
+    var newArray = new Array();
+    for (var i = 0; i < actual.length; i++) {
+      if (actual[i]) {
+        newArray.push(actual[i]);
+      }
+    }
+    return newArray;
+  }
+
 function unique (_arr) {
     var o = {}, a = [], i, e;
     for (i = 0; e = _arr[i]; i++) {o[e] = 1};
@@ -393,6 +406,7 @@ function read_table(txtFile) {
 
     // take the forth column (groups)
     var groups = getCol(table, 3);
+    groups = cleanArray(groups);
     groups = unique(groups);
 
     return [table, columns, groups];

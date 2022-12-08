@@ -409,6 +409,7 @@ function read_table(txtFile) {
 
     // read column names
     var columns = txtFile.readln().split(',');
+    columns = cleanArray(columns);
 
     // make sure columns in file are as expected
     expected_columns = ['filename', 'biomarker', 'hue', 'group'];
